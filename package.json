@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.32",
   "name": "@databuddy/nextless",
   "module": "index.ts",
   "type": "module",
@@ -10,6 +10,9 @@
     "lint": "bunx @biomejs/biome lint ./src",
     "lint:fix": "bunx @biomejs/biome lint --apply ./src",
     "format": "bunx @biomejs/biome format --write ./src",
+    "version:patch": "bun run scripts/bump-patch.ts",
+    "version:minor": "bun run scripts/bump-minor.ts",
+    "version:major": "bun run scripts/bump-major.ts",
     "deploy": "bun publish --access=public"
   },
   "devDependencies": {
