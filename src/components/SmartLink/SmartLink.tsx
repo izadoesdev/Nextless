@@ -5,6 +5,7 @@ import {
   type ElementType,
   createElement,
 } from 'react';
+import { isExternalUrl } from '../../utils/url';
 
 /**
  * @interface ReactRouterLikeLinkProps
@@ -155,16 +156,9 @@ export const SmartLink: FC<SmartLinkProps> = ({
   rel: relProp,
   ...rest // Other props like className, id, aria-*, data-*, etc.
 }) => {
-  const isExplicitlyExternal = isExternalProp === true;
-  const isImplicitlyExternal =
-    isExternalProp === undefined &&
-    (href.startsWith('http://') ||
-      href.startsWith('https://') ||
-      href.startsWith('//') ||
-      href.startsWith('mailto:') ||
-      href.startsWith('tel:'));
-
-  const isActualExternal = isExplicitlyExternal || isImplicitlyExternal;
+  const isActualExternal =
+    isExternalProp === true ||
+    (isExternalProp === undefined && isExternalUrl(href));
 
   if (isActualExternal) {
     const finalTarget = targetProp ?? '_blank'; // Default to _blank for external links
