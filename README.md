@@ -19,13 +19,13 @@ You can install Nextless components using your favorite package manager. As this
 
 ```bash
 # Using Bun (recommended for this project)
-bun add nextless react react-dom
+bun add @databuddy/nextless react react-dom
 
 # Using npm
-npm install nextless react react-dom
+npm install @databuddy/nextless react react-dom
 
 # Using yarn
-yarn add nextless react react-dom
+yarn add @databuddy/nextless react react-dom
 ```
 
 Ensure you have `react` and `react-dom` (version 18.0.0 or newer, or 19.0.0 or newer as per recent changes) as peer dependencies in your project.
@@ -52,7 +52,7 @@ The `<SmartLink />` component provides a flexible way to handle navigation.
 **Basic Usage:**
 
 ```tsx
-import { SmartLink } from 'nextless';
+import { SmartLink } from '@databuddy/nextless';
 
 function App() {
   return (
@@ -77,7 +77,7 @@ function App() {
 First, ensure `react-router-dom` is installed in your project.
 
 ```tsx
-import { SmartLink } from 'nextless';
+import { SmartLink } from '@databuddy/nextless';
 import { Link as ReactRouterLink } from 'react-router-dom'; // Your router's Link component
 
 function AppWithRouter() {
