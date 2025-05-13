@@ -1,0 +1,27 @@
+{
+  "name": "nextless",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "bunx @biomejs/biome lint ./src",
+    "lint:fix": "bunx @biomejs/biome lint --apply ./src",
+    "format": "bunx @biomejs/biome format --write ./src"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "latest",
+    "@types/react": "^19.1.4",
+    "@types/react-router-dom": "^5.3.3"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-router-dom": {
+      "optional": true
+    }
+  }
+}
