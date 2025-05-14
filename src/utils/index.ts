@@ -1,1 +1,1 @@
-export { isExternalUrl } from './url'; 
+export { isExternalUrl } from './url';

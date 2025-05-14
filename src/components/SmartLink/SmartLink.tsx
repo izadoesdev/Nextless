@@ -25,15 +25,16 @@ import { isExternalUrl } from '../../utils/url';
  * @property {boolean} [end] - (React Router NavLink specific) If true, the link will only be active if the current URL exactly matches the `to` prop.
  * @property {boolean} [caseSensitive] - (React Router NavLink specific) If true, matching of the `to` prop against the current URL will be case-sensitive.
  */
-interface ReactRouterLikeLinkProps {
-  to: string;
-  replace?: boolean;
-  state?: unknown;
-  preventScrollReset?: boolean;
-  relative?: 'route' | 'path';
-  end?: boolean; // Common in NavLink
-  caseSensitive?: boolean; // Common in NavLink
-}
+
+// interface ReactRouterLikeLinkProps {
+//   to: string;
+//   replace?: boolean;
+//   state?: unknown;
+//   preventScrollReset?: boolean;
+//   relative?: 'route' | 'path';
+//   end?: boolean; // Common in NavLink
+//   caseSensitive?: boolean; // Common in NavLink
+// }
 
 /**
  * @interface SmartLinkProps
@@ -197,10 +198,12 @@ export const SmartLink: FC<SmartLinkProps> = ({
     // Conditionally add router-specific props if they are defined on SmartLink
     if (replace !== undefined) linkImplProps.replace = replace;
     if (state !== undefined) linkImplProps.state = state;
-    if (preventScrollReset !== undefined) linkImplProps.preventScrollReset = preventScrollReset;
+    if (preventScrollReset !== undefined)
+      linkImplProps.preventScrollReset = preventScrollReset;
     if (relative !== undefined) linkImplProps.relative = relative;
     if (end !== undefined) linkImplProps.end = end;
-    if (caseSensitive !== undefined) linkImplProps.caseSensitive = caseSensitive;
+    if (caseSensitive !== undefined)
+      linkImplProps.caseSensitive = caseSensitive;
 
     // Pass through target and rel if they are explicitly set on SmartLink
     if (targetProp !== undefined) linkImplProps.target = targetProp;
@@ -218,4 +221,4 @@ export const SmartLink: FC<SmartLinkProps> = ({
   );
 };
 
-export default SmartLink; 
+export default SmartLink;

@@ -9,4 +9,4 @@ packageJson.version = `${major}.${minor}.${patch + 1}`;
 await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 
 console.log(`Bumped patch version to ${packageJson.version}`);
-await $`git add package.json`; 
+await $`git add package.json`;

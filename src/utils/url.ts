@@ -26,4 +26,4 @@ export const isExternalUrl = (url: string): boolean => {
     url.startsWith('mailto:') ||
     url.startsWith('tel:')
   );
-}; 
+};

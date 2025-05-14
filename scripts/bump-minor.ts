@@ -11,4 +11,4 @@ packageJson.version = `${major}.${minor}.${patch}`;
 await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 
 console.log(`Bumped minor version to ${packageJson.version}`);
-await $`git add package.json`; 
+await $`git add package.json`;
