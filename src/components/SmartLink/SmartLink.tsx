@@ -37,6 +37,26 @@ import { isExternalUrl } from '../../utils/url';
 // }
 
 /**
+ * Available types of relative path resolution
+ */
+export enum RelativeType {
+  ROUTE = 'route',
+  PATH = 'path',
+}
+
+/**
+ * Common router props that SmartLink handles and passes to the underlying component
+ */
+export type RouterProps = {
+  replace?: boolean;
+  state?: unknown;
+  preventScrollReset?: boolean;
+  relative?: RelativeType;
+  end?: boolean;
+  caseSensitive?: boolean;
+};
+
+/**
  * @interface SmartLinkProps
  * @extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'target' | 'rel'>
  * @description Props for the `SmartLink` component.
@@ -72,28 +92,29 @@ import { isExternalUrl } from '../../utils/url';
  *                           to any existing `rel` values. For internal links (native `<a>` or via `linkAs`),
  *                           this `rel` prop is passed through.
  */
-export interface SmartLinkProps
-  extends Omit<
-    AnchorHTMLAttributes<HTMLAnchorElement>,
-    'href' | 'target' | 'rel' // `href` is mandatory and redefined; `target` and `rel` are handled specially
-  > {
-  href: string;
-  children: ReactNode;
-  isExternal?: boolean;
-  linkAs?: ElementType;
-
-  // Props often used by router link components, passed through if linkAs is provided
-  replace?: boolean;
-  state?: unknown;
-  preventScrollReset?: boolean;
-  relative?: 'route' | 'path';
-  end?: boolean;
-  caseSensitive?: boolean;
-
-  // Allow overriding target and rel, with special handling by SmartLink
-  target?: string;
-  rel?: string;
-}
+export type SmartLinkProps = Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  'href' | 'target' | 'rel'
+> & 
+  RouterProps & {
+    /** URL or path for the link */
+    href: string;
+    
+    /** Link content */
+    children: ReactNode;
+    
+    /** Explicitly mark as external (auto-detected if undefined) */
+    isExternal?: boolean;
+    
+    /** Component to use for internal links (e.g., router Link) */
+    linkAs?: ElementType;
+    
+    /** Target attribute (defaults to _blank for external links) */
+    target?: string;
+    
+    /** Rel attribute (noopener noreferrer added for _blank) */
+    rel?: string;
+  };
 
 /**
  * @component SmartLink
@@ -140,46 +161,50 @@ export interface SmartLinkProps
  * <SmartLink href="/home" linkAs={ReactRouterLink} replace>Home (replace)</SmartLink>
  * ```
  */
-export const SmartLink: FC<SmartLinkProps> = ({
+export function SmartLink({
+  // Basic props
   href,
   children,
   isExternal: isExternalProp,
   linkAs: LinkComponent,
-  // Router-specific props (also passed to LinkComponent if provided)
+  
+  // Router props
   replace,
   state,
   preventScrollReset,
   relative,
   end,
   caseSensitive,
-  // Standard anchor props we handle specially or pass through
+  
+  // HTML anchor props
   target: targetProp,
   rel: relProp,
-  ...rest // Other props like className, id, aria-*, data-*, etc.
-}) => {
-  const isActualExternal =
-    isExternalProp === true ||
-    (isExternalProp === undefined && isExternalUrl(href));
+  
+  // All other props
+  ...rest
+}: SmartLinkProps) {
+  // Determine if link is external
+  const isActualExternal = 
+    isExternalProp ?? isExternalUrl(href);
 
+  // External link handling
   if (isActualExternal) {
-    const finalTarget = targetProp ?? '_blank'; // Default to _blank for external links
-    let currentRel = relProp ?? '';
+    const finalTarget = targetProp ?? '_blank';
+    let finalRel = relProp ?? '';
 
-    // Ensure noopener noreferrer for security if target is _blank
+    // Add security attributes for _blank targets
     if (finalTarget === '_blank') {
-      if (!currentRel.includes('noopener')) {
-        currentRel = `${currentRel} noopener`.trim();
-      }
-      if (!currentRel.includes('noreferrer')) {
-        currentRel = `${currentRel} noreferrer`.trim();
-      }
+      const relParts = new Set(finalRel.split(' ').filter(Boolean));
+      relParts.add('noopener');
+      relParts.add('noreferrer');
+      finalRel = Array.from(relParts).join(' ');
     }
 
     return (
       <a
         href={href}
         target={finalTarget}
-        rel={currentRel || undefined} // Pass undefined if rel is empty string to avoid rel=""
+        rel={finalRel || undefined}
         {...rest}
       >
         {children}
@@ -187,38 +212,36 @@ export const SmartLink: FC<SmartLinkProps> = ({
     );
   }
 
-  // Internal link handling
+  // Router component integration
   if (LinkComponent) {
-    // Props intended for the LinkComponent
-    const linkImplProps: Record<string, unknown> & { to: string } = {
-      ...rest, // Spread unrecognized props first
-      to: href, // `to` (from SmartLink's href) takes precedence over a 'to' in `rest`
-    };
+    const routerProps: Record<string, unknown> = { to: href, ...rest };
+    
+    // Add router-specific props if defined
+    if (replace !== undefined) routerProps.replace = replace;
+    if (state !== undefined) routerProps.state = state;
+    if (preventScrollReset !== undefined) routerProps.preventScrollReset = preventScrollReset;
+    if (relative !== undefined) routerProps.relative = relative;
+    if (end !== undefined) routerProps.end = end;
+    if (caseSensitive !== undefined) routerProps.caseSensitive = caseSensitive;
+    
+    // Pass through anchor attributes
+    if (targetProp !== undefined) routerProps.target = targetProp;
+    if (relProp !== undefined) routerProps.rel = relProp;
 
-    // Conditionally add router-specific props if they are defined on SmartLink
-    if (replace !== undefined) linkImplProps.replace = replace;
-    if (state !== undefined) linkImplProps.state = state;
-    if (preventScrollReset !== undefined)
-      linkImplProps.preventScrollReset = preventScrollReset;
-    if (relative !== undefined) linkImplProps.relative = relative;
-    if (end !== undefined) linkImplProps.end = end;
-    if (caseSensitive !== undefined)
-      linkImplProps.caseSensitive = caseSensitive;
-
-    // Pass through target and rel if they are explicitly set on SmartLink
-    if (targetProp !== undefined) linkImplProps.target = targetProp;
-    if (relProp !== undefined) linkImplProps.rel = relProp;
-
-    return createElement(LinkComponent, linkImplProps, children);
+    return createElement(LinkComponent, routerProps, children);
   }
 
-  // Fallback for internal links: standard <a> tag
-  // Respect targetProp and relProp if provided
+  // Default: standard anchor tag
   return (
-    <a href={href} target={targetProp} rel={relProp} {...rest}>
+    <a 
+      href={href} 
+      target={targetProp} 
+      rel={relProp} 
+      {...rest}
+    >
       {children}
     </a>
   );
-};
+}
 
 export default SmartLink;

@@ -1,3 +1,5 @@
-// @databuddy/nextless/src/index.ts
-export { SmartLink } from './components/SmartLink';
-export type { SmartLinkProps } from './components/SmartLink'; // Also re-exporting the props type for good measure 
+// Re-export all components
+export * from './components';
+
+// Re-export utility functions
+export { isExternalUrl } from './utils/url'; 
