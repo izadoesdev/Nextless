@@ -1,19 +1,24 @@
 {
   "version": "0.0.32",
   "name": "@databuddy/nextless",
-  "module": "index.ts",
+  "module": "dist/index.js",
   "type": "module",
   "private": false,
-  "main": "index.ts",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "lint": "bunx biome lint",
     "lint:fix": "bunx biome lint --apply",
     "format": "bunx biome format --write",
+    "build": "bunx tsc --project tsconfig.json",
     "version:patch": "bun run scripts/bump-patch.ts",
     "version:minor": "bun run scripts/bump-minor.ts",
     "version:major": "bun run scripts/bump-major.ts",
-    "deploy": "bun publish --access=public"
+    "deploy": "bun run build && bun publish --access=public"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
